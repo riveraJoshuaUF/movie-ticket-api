@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: Movie Ticket Seat Reservation API
+  version: 1.0.0
+  description: >
+    This API lets customers check seat availability, reserve seats temporarily,
+    and cancel a reservation while purchasing movie tickets online.
+paths:
+  /showtimes/{showtimeId}/seats:
+    get:
+      summary: View seat availability for a showtime
+      parameters:
+        - name: showtimeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Seat availability returned
+        '404':
+          description: Showtime not found
+
+  /reservations:
+    post:
+      summary: Temporarily reserve selected seats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - showtimeId
+                - seatIds
+                - customerEmail
+              properties:
+                showtimeId:
+                  type: string
+                seatIds:
+                  type: array
+                  items:
+                    type: string
+                customerEmail:
+                  type: string
+      responses:
+        '201':
+          description: Seats reserved
+        '409':
+          description: One or more seats are unavailable
+
+  /reservations/{reservationId}:
+    delete:
+      summary: Cancel a temporary seat reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Reservation canceled
+        '404':
+          description: Reservation not found or expired
+        '409':
+          description: Reservation has already been paid
